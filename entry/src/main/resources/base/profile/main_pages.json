@@ -1,0 +1,7 @@
+{
+  "src": [
+    "pages/Index",
+    "pages/TaskList",
+    "pages/Task1Detail"
+  ]
+}
