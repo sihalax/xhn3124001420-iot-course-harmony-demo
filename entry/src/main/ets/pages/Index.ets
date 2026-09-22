@@ -27,6 +27,15 @@ struct Index {
           router.pushUrl({url:"pages/TaskList"})
         })
 
+
+      Button("进入天气预报页面")
+        .width("90%")
+        .margin({top:20})
+        .onClick(()=>{
+          router.pushUrl({url:"pages/Weatherpages"})
+        })
+
+
     }
     .width('100%')
     .height('100%')

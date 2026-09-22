@@ -1,25 +1,8 @@
 {
   "app": {
-    "signingConfigs": [
-      {
-        "name": "default",
-        "type": "HarmonyOS",
-        "material": {
-          "storeFile": "./my_demo_key.p12",
-          "storePassword": "666777828xhn",
-          "certpath": "./调试证书.cer",
-          "profile": "./gdut_homework_debugDebug.p7b",
-          "keyAlias": "testalias",
-          "keyPassword": "666777828xhn",
-          "signAlg": "SHA256withECDSA"
-        }
-
-      }
-    ],
     "products": [
       {
         "name": "default",
-        "signingConfig": "default",
         "bundleName": "cn.gdut.iotsoft.x3124001420",
         "targetSdkVersion": "26.0.0",
         "compatibleSdkVersion": "6.1.1(24)",
@@ -38,6 +21,21 @@
       },
       {
         "name": "release"
+      }
+    ],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\sihala\\.ohos\\config\\default_xhn3124001420-iot-course-harmony-demo_87-9RVxPduiP9DYWy5LCCoRx5Gmk1553FgmWrDJneVc=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001BE78E7FE2299336C65ACDD57224A6ACAFAF02D9C1788F272E65065513B91D7818BFB5FADDF08E27",
+          "profile": "C:\\Users\\sihala\\.ohos\\config\\default_xhn3124001420-iot-course-harmony-demo_87-9RVxPduiP9DYWy5LCCoRx5Gmk1553FgmWrDJneVc=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\sihala\\.ohos\\config\\default_xhn3124001420-iot-course-harmony-demo_87-9RVxPduiP9DYWy5LCCoRx5Gmk1553FgmWrDJneVc=.p12",
+          "storePassword": "0000001BE319F93EC33661EC03BD5E8E56668227EC89B48B066DBA9A9195A1AAD08F7FF9D3A0074FDBD283"
+        }
       }
     ]
   },

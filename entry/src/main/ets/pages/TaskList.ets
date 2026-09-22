@@ -43,6 +43,13 @@ struct TaskList {
         .onClick(()=>{
           router.pushUrl({url:"pages/Calculator"})
         })
+      Button("天气预报")
+        .width("70%")
+        .height(50)
+        .margin({top:20})
+        .onClick(()=>{
+          router.pushUrl({url:"pages/Weatherpages"})
+        })
 
 
 

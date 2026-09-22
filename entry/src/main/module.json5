@@ -45,6 +45,12 @@
           }
         ]
       }
+    ],
+    // ========= 新增网络权限 =========
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.INTERNET"
+      }
     ]
   }
 }
