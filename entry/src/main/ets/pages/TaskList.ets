@@ -14,6 +14,9 @@ struct TaskList {
         .width("80%")
         .height(48)
         .margin({bottom:15})
+        .onClick(()=>{
+          router.pushUrl({url:"pages/Task1Detail"})
+        })
       Button("任务2：下课")
         .width("80%")
         .height(48)
@@ -26,6 +29,14 @@ struct TaskList {
         .onClick(()=>{
           router.back()
         })
+       Button("电子名片模块")
+         .width("70%")
+         .height(50)
+         .margin({top:70})
+        .onClick(()=>{
+          router.pushUrl({url:"pages/BusinessCard"})
+        })
+
 
     }
     .width('100%')
