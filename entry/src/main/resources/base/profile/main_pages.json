@@ -3,6 +3,7 @@
     "pages/Index",
     "pages/TaskList",
     "pages/Task1Detail",
-    "pages/BusinessCard"
+    "pages/BusinessCard",
+    "pages/Calculator"
   ]
 }

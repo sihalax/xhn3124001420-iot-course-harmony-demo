@@ -36,6 +36,14 @@ struct TaskList {
         .onClick(()=>{
           router.pushUrl({url:"pages/BusinessCard"})
         })
+      Button("有声计算器")
+        .width("70%")
+        .height(50)
+        .margin({top:20})
+        .onClick(()=>{
+          router.pushUrl({url:"pages/Calculator"})
+        })
+
 
 
     }
