@@ -50,7 +50,13 @@ struct TaskList {
         .onClick(()=>{
           router.pushUrl({url:"pages/Weatherpages"})
         })
-
+      Button("网页留言板")
+        .width("70%")
+        .height(50)
+        .margin({top:20})
+        .onClick(()=>{
+          router.pushUrl({url:"pages/MessageBoard"})
+        })
 
 
     }

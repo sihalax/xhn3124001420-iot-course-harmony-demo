@@ -5,6 +5,7 @@
     "pages/Task1Detail",
     "pages/BusinessCard",
     "pages/Calculator",
-    "pages/Weatherpages"
+    "pages/Weatherpages",
+    "pages/MessageBoard"
   ]
 }

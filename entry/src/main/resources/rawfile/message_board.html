@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>网页留言板</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f2f4f7;
+      color: #1d2129;
+      padding-bottom: 24px;
+    }
+    .header {
+      background: linear-gradient(135deg, #4e6ef2, #7b9ff9);
+      color: #fff;
+      padding: 20px 16px 24px;
+      text-align: center;
+    }
+    .header h1 { font-size: 20px; font-weight: 600; }
+    .header p { font-size: 12px; opacity: 0.85; margin-top: 6px; }
+
+    .input-card {
+      background: #fff;
+      margin: -14px 12px 12px;
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+    .input-card input,
+    .input-card textarea {
+      width: 100%;
+      border: 1px solid #e5e6eb;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+      background: #fafbfc;
+    }
+    .input-card input:focus,
+    .input-card textarea:focus { border-color: #4e6ef2; background: #fff; }
+    .input-card textarea { min-height: 64px; resize: vertical; margin-top: 10px; }
+    .row { display: flex; gap: 10px; margin-top: 12px; align-items: center; }
+    .row input { flex: 1; margin-top: 0; }
+    .submit-btn {
+      background: #4e6ef2;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .submit-btn:active { background: #3b5bd9; }
+
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 16px 4px;
+    }
+    .list-header span { font-size: 14px; color: #4e5969; font-weight: 500; }
+    .clear-btn {
+      font-size: 12px;
+      color: #86909c;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .msg-item {
+      background: #fff;
+      margin: 8px 12px;
+      border-radius: 10px;
+      padding: 12px 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .msg-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .msg-nick { font-size: 14px; font-weight: 600; color: #4e6ef2; }
+    .msg-time { font-size: 11px; color: #86909c; }
+    .msg-content { font-size: 14px; line-height: 1.5; color: #1d2129; word-break: break-word; }
+
+    .empty {
+      text-align: center;
+      color: #86909c;
+      font-size: 13px;
+      padding: 40px 0;
+    }
+
+    .toast-mask {
+      position: fixed;
+      left: 50%; bottom: 80px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.75);
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+      z-index: 999;
+    }
+    .toast-mask.show { opacity: 1; }
+
+    .native-banner {
+      background: #fff7e6;
+      border-left: 3px solid #ff9a2e;
+      margin: 8px 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #d46b08;
+      display: none;
+    }
+    .native-banner.show { display: block; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>网页留言板</h1>
+    <p>Web ↔ 鸿蒙原生双向通信演示</p>
+  </div>
+
+  <div class="native-banner" id="nativeBanner"></div>
+
+  <div class="input-card">
+    <input type="text" id="nickInput" placeholder="你的昵称" maxlength="20" />
+    <textarea id="contentInput" placeholder="写下你想说的话..." maxlength="200"></textarea>
+    <div class="row">
+      <button class="submit-btn" onclick="submitMessage()">提交留言</button>
+    </div>
+  </div>
+
+  <div class="list-header">
+    <span>历史留言</span>
+    <button class="clear-btn" onclick="clearAll()">清空</button>
+  </div>
+
+  <div id="msgList">
+    <div class="empty">暂无留言，快来抢沙发~</div>
+  </div>
+
+  <div class="toast-mask" id="webToast"></div>
+
+  <script>
+    // ============ 网页侧状态 ============
+    var messages = [];
+
+    // ============ 工具函数 ============
+    function formatTime(ts) {
+      var d = new Date(ts);
+      var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
+      return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
+        ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    }
+
+    function showWebToast(text) {
+      var el = document.getElementById('webToast');
+      el.textContent = text;
+      el.classList.add('show');
+      setTimeout(function() { el.classList.remove('show'); }, 1800);
+    }
+
+    // ============ 渲染留言列表 ============
+    function renderList() {
+      var list = document.getElementById('msgList');
+      if (!messages || messages.length === 0) {
+        list.innerHTML = '<div class="empty">暂无留言，快来抢沙发~</div>';
+        return;
+      }
+      var html = '';
+      // 最新在最前
+      for (var i = messages.length - 1; i >= 0; i--) {
+        var m = messages[i];
+        html += '<div class="msg-item">' +
+          '<div class="msg-meta">' +
+            '<span class="msg-nick">' + escapeHtml(m.nickname) + '</span>' +
+            '<span class="msg-time">' + formatTime(m.timestamp) + '</span>' +
+          '</div>' +
+          '<div class="msg-content">' + escapeHtml(m.content) + '</div>' +
+        '</div>';
+      }
+      list.innerHTML = html;
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // ============ 提交留言（网页 → 原生） ============
+    function submitMessage() {
+      var nick = document.getElementById('nickInput').value.trim();
+      var content = document.getElementById('contentInput').value.trim();
+      if (!nick) { showWebToast('请输入昵称'); return; }
+      if (!content) { showWebToast('留言内容不能为空'); return; }
+
+      if (window.nativeBridge && typeof window.nativeBridge.submitMessage === 'function') {
+        // 调用原生桥接对象，原生负责持久化并回调网页
+        window.nativeBridge.submitMessage(nick, content);
+        document.getElementById('contentInput').value = '';
+      } else {
+        showWebToast('原生桥接未就绪');
+      }
+    }
+
+    function clearAll() {
+      if (window.nativeBridge && typeof window.nativeBridge.clearAll === 'function') {
+        window.nativeBridge.clearAll();
+      }
+    }
+
+    // ============ 原生 → 网页 回调函数（由原生 runJavaScript 调用） ============
+    // 原生回传历史留言
+    window.renderMessages = function(jsonStr) {
+      try {
+        messages = JSON.parse(jsonStr) || [];
+      } catch (e) {
+        messages = [];
+      }
+      renderList();
+    };
+
+    // 原生确认单条留言已保存
+    window.onMessageSaved = function(jsonStr) {
+      try {
+        var msg = JSON.parse(jsonStr);
+        messages.push(msg);
+        renderList();
+        showWebToast('留言成功');
+      } catch (e) {}
+    };
+
+    // 原生推送通知
+    window.onNativeNotification = function(text) {
+      var banner = document.getElementById('nativeBanner');
+      banner.textContent = '📢 ' + text;
+      banner.classList.add('show');
+      setTimeout(function() { banner.classList.remove('show'); }, 3000);
+    };
+
+    // 原生通知清空完成
+    window.onCleared = function() {
+      messages = [];
+      renderList();
+      showWebToast('已清空');
+    };
+
+    // 页面加载完成通知原生
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.nativeBridge && typeof window.nativeBridge.onPageReady === 'function') {
+        window.nativeBridge.onPageReady();
+      }
+    });
+  </script>
+</body>
+</html>
