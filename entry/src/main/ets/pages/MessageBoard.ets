@@ -1,5 +1,5 @@
 import { webview } from '@kit.ArkWeb';
-import { router } from '@ohos.router';
+import router from '@ohos.router';
 import { promptAction } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
 import { MessageStore } from '../webbridge/MessageStore';
